@@ -6,6 +6,9 @@ all:
 run: all
 	./gts -pkg main -type Point -gen stack
 
+install:
+	go install
+
 test:
 	go test ./stack
 

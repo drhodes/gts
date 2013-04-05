@@ -2,15 +2,23 @@ package stack
 
 import (
 	"errors"
+	"log"
 )
+
+// gts instructions
+// Implement: func Zero𝞃() 𝞃
+// It's a default constructor used to appease the typesystem
+// in the event of multiple return with error e.g:
+//   return Zero𝞃(), err
 
 // dummy start --------------------------------------------
 func Zero𝞃() 𝞃 {
 	return 𝞃(0)
 }
-// dummy end ----------------------------------------------
 
 type 𝞃 int
+// dummy end ----------------------------------------------
+
 
 // array based stack with repeated doubling
 type Stack𝞃 struct {	
@@ -54,6 +62,18 @@ func (s *Stack𝞃) PointerPop() *𝞃 {
 	s.maybeShrink()
 	return &el
 }
+
+// less allocation, but the user needs to check for nil.
+func (s *Stack𝞃) PanicPop() 𝞃 {
+	if s.Empty() {
+		log.Panic("Trying to pop an empty stack")
+	}
+	el := s.arr[s.cur - 1]
+	s.cur--
+	s.maybeShrink()
+	return el
+}
+
 
 // Half the stack capacity if cur index is quarter the length
 func (s *Stack𝞃) maybeShrink() {	
