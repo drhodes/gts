@@ -27,7 +27,12 @@ func (t 𝞃) CompareTo(other 𝞃) int {
 	return 0
 }
 
+func 
+
 // end dummy
+
+
+
 
 const (
 	RED = true
@@ -168,7 +173,6 @@ func min(h *_node) 𝞃 {
 	return New𝞃()
 }
 
-
 func moveRedLeft(h *_node) *_node { 
 	colorFlip(h)
 	
@@ -179,8 +183,6 @@ func moveRedLeft(h *_node) *_node {
 	}
 	return h
 }
-
-
 
 // Assuming that h is red and both h.right and h.right.left
 // are black, make h.right or one of its children red.
@@ -204,8 +206,6 @@ func leanRight(h *_node) *_node {
 	h.right.color = RED;                     
 	return h
 }
-
-
 
 func delete(h *_node, key 𝞃) *_node {
 	cmp := key.CompareTo(h.key)
