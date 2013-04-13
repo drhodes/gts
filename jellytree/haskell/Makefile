@@ -1,0 +1,4 @@
+
+
+all:
+	ghc jtree.hs
