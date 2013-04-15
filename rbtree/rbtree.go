@@ -27,8 +27,6 @@ func (t 𝞃) CompareTo(other 𝞃) int {
 	return 0
 }
 
-func 
-
 // end dummy
 
 
@@ -58,9 +56,8 @@ func new_node(key 𝞃, N int, color bool) *_node {
 func size(h *_node) int {
 	if h == nil {
 		return 0
-	} else {
-		return h.N
 	}
+	return h.N
 }
 
 func rotateLeft(h *_node) *_node {
@@ -168,10 +165,6 @@ func colorFlip(h *_node) *_node {
 	return h;
 }
 
-func min(h *_node) 𝞃 {
-	// implement this
-	return New𝞃()
-}
 
 func moveRedLeft(h *_node) *_node { 
 	colorFlip(h)
@@ -207,16 +200,37 @@ func leanRight(h *_node) *_node {
 	return h
 }
 
-func delete(h *_node, key 𝞃) *_node {
+func (h *_node) min() 𝞃 {
+	if h.left == nil {
+		return h.key
+	} 
+	return h.min()
+}
+
+func (h *_node) isLeaf() bool {
+	return h.left == nil && h.right == nil
+}
+
+func (h *_node) deleteMin() {
+	// case of initial empty tree.
+	if h.left == nil {
+		return 
+	}
+	if h.left.isLeaf() {
+		h.left = nil
+	}
+}
+
+func (h *_node) delete(key 𝞃) *_node {
 	cmp := key.CompareTo(h.key)
 
 	if cmp < 0 {
-		if (!isRed(h.left) && !isRed(h.left.left)) {			
+		if !isRed(h.left) && !isRed(h.left.left) {			
 			h = moveRedLeft(h);			
-			h.left = delete(h.left, key);			
+			h.left.delete(key);			
 		}
 	} else {		
-		if (isRed(h.left)) {
+		if isRed(h.left) {
 			h = leanRight(h);
 		}
 
@@ -229,12 +243,25 @@ func delete(h *_node, key 𝞃) *_node {
 		}
 		
 		if (cmp == 0) {			
-			h.key = min(h.right);			
-			h.value = get(h.right, h.key);			
-			h.right = deleteMin(h.right);			
+			h.key = h.right.min()			
+			h.right.deleteMin()
 		} else {
-			h.right = delete(h.right, key);
+			h.right.delete(key)
 		}
 	}
 	return fixUp(h);
+}
+
+
+func fixUp(h *_node) *_node {
+	if isRed(h.right) {
+		h = rotateLeft(h);
+	}
+	if (isRed(h.left) && isRed(h.left.left)) {
+		h = rotateRight(h);
+	}
+	if (isRed(h.left) && isRed(h.right)) {		
+		colorFlip(h);
+	}
+	return h;	
 }

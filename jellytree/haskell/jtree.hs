@@ -4,7 +4,7 @@ import qualified Debug.Trace as DT
 -- jelly tree.
 
 padding n = concat $ take n (repeat " ")
-pretty Nil d = (padding $ d) ++ "nil\n"
+pretty Nil d = (padding $ d) ++ "-\n"
 pretty (Node g lb rb) d = 
     concat [ padding d, show g, "\n"    
            , padding d, pretty lb (d+1) 
@@ -28,7 +28,7 @@ grp_insert :: (Ord a) => Group a -> a -> Group a
 grp_insert EmptyGroup n = One n
 grp_insert (One a) n = (Two (min a n) (max a n))
 grp_insert (Two a b) n = San x y z
-    where -- this is bad, fix it.
+    where
       x = min n $ min a b
       z = max n $ max a b
       y = if a < b && b < n
@@ -83,8 +83,7 @@ maxrm t@(Node g lb rb) = if leaf t
 minrm t@(Node g lb rb) = if leaf t
                          then Node (grp_rm_min g) Nil Nil
                          else Node g (minrm lb) rb
--- fix_left Nil = Nil
--- fix_left (Node EmptyGroup _ _) = undefined "Had"
+
 fix_left n@(Node g lb rb) = 
     if lb == Nil then n else 
         let gmin = grp_min g
@@ -104,8 +103,6 @@ fix_left n@(Node g lb rb) =
                 -- insert the group-min-val into the left branch
                 Node (grp_insert newGrp maxEl) (j_insert newLb maxEl) rb
 
--- fix_right Nil = Nil
--- fix_right n@(Node g Nil Nil) = n
 fix_right n@(Node g lb rb) = 
     if rb == Nil then n else 
         let gmax = grp_max g
@@ -128,5 +125,15 @@ fix_right n@(Node g lb rb) =
 tree_insert t el = j_insert (fix_left $ fix_right t) el
                    
 main = do
-  let tree = foldl tree_insert (j_new 0) [1..20]
-  putStrLn $ pretty tree 0
+  let tree = DL.foldl' tree_insert (j_new 0) [1..8000000]
+  print $ tree_max_element tree
+           
+ 
+-- 100.000 0.523
+-- 150.000 0.786
+-- 200.000 1.071
+-- 250.000 1.
+-- 1.000.000 6.229
+-- 2.000.000 11.992
+-- 4.000.000 23.590
+-- 8.000.000
