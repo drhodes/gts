@@ -1,267 +1,414 @@
 package rbtree
 
-// implementation based on:
-// sedgewick 2007
-// algorithms 4th edition
-// https://class.coursera.org/algs4partI-002/lecture/50
-
-// Red links lean left
-// No node has two red links connected to it
-// Every path from root to null link has the same number of black links
-// find is exactly the same as normal BST
+// ported version of 
+// http://www.cs.princeton.edu/~rs/talks/LLRB/08Dagstuhl/Java/RedBlackBST.java
 
 import (
-	"fmt"
+	"log"
 )
 
-// start dummy 
-type 𝞃 int
+type (
+	β int	
+	α int
+)
 
-func (t 𝞃) CompareTo(other 𝞃) int {
-	if t < other {
-		return -1
-	} else if t > other {
-		return 1
-	}
-	// t == other.
-	return 0
+func Newβ() β {
+	return β(0)
 }
 
-// end dummy
-
-
-
+func (k α) compareTo(other α) int {
+	if k < other {
+		return -1
+	} else if k > other {
+		return 1 
+	}
+	return 0
+}
 
 const (
 	RED = true
 	BLACK = false
 )
 
-type _node struct {
-	key 𝞃
-	left, right *_node
-	N int
-	color bool
+type node struct {
+	key α
+	value β
+	left, right *node
+	xc, yc float64
+	color bool;      // color of parent link
 }
 
-func new_node(key 𝞃, N int, color bool) *_node {
-	n := new(_node)
-	n.key = key
-	n.N = N
+func newNode(key α, value β, color bool) *node {
+	n := node{}	
+	n.key   = key
+	n.value = value
 	n.color = color
-	return n
+	return &n
 }
 
-// not recursive, size is calculated more efficiently.
-func size(h *_node) int {
-	if h == nil {
-		return 0
+type RedBlackBST struct {
+	// all three fields are private, so change the names once tests pass
+	root *node;      // root of the BST
+	N int;           // size of BST
+	k int
+}
+
+func get(x *node, key α) (β, bool) {
+	if (x == nil) {
+        return Newβ(), false
 	}
-	return h.N
-}
-
-func rotateLeft(h *_node) *_node {
-	x := h.right
-	h.right = x.left
-	x.left = h
-	x.color = h.color
-	h.color = RED
-	x.N = h.N
-	h.N = 1 + size(h.left) + size(h.right)
-	return x
-}
-
-func isRed(x *_node) bool {	
-	if x == nil {
-		return false 
+	if eq(key, x.key) {
+		return x.value, true
 	}
-	return x.color == RED
+	if less(key, x.key) {
+		return get(x.left,  key)
+	} else {
+		return get(x.right, key)
+    }
 }
 
-func rotateRight(h *_node) *_node {
+func (rb *RedBlackBST) get(key α) (β, bool) {  
+	return get(rb.root, key)  
+}
+
+func (rb *RedBlackBST) contains(key α) bool {  
+	_, b := rb.get(key)
+	return b
+}
+
+func (rb *RedBlackBST) put(key α, value β) {
+	if (!rb.contains(key)) {
+		rb.N++
+	}
+	rb.root = insert(rb.root, key, value)
+	rb.root.color = BLACK
+}
+
+func insert(h *node, key α, value β) *node {
+	if (h == nil) {
+		return newNode(key, value, RED)
+	}
+	if (isRed(h.left)) {
+		if (isRed(h.left.left)) {
+            h = splitFourNode(h)
+		}
+	}
+	if (eq(key, h.key)) {
+		h.value = value
+	} else if (less(key, h.key)) {
+		h.left = insert(h.left, key, value); 
+	} else {
+		h.right = insert(h.right, key, value); 
+	} 
+
+	if (isRed(h.right)) {
+		h = leanLeft(h)
+	} 
+
+	return h
+}
+
+func (rb *RedBlackBST) deleteMin() {	
+	rb.root = deleteMin(rb.root)
+	rb.root.color = BLACK
+	rb.N--
+}
+
+func deleteMin(h *node) *node { 	
+	if (h.left == nil) {
+		return nil
+	}
+	if (!isRed(h.left) && !isRed(h.left.left)) {
+		h = moveRedLeft(h)
+	}
+
+	h.left = deleteMin(h.left)
+	
+	if (isRed(h.right)) {
+		h = leanLeft(h)
+	}
+
+	return h
+}
+
+func (rb *RedBlackBST) deleteMax() { 
+	rb.root = deleteMax(rb.root)
+	rb.root.color = BLACK
+	rb.N--
+}
+
+func deleteMax(h *node) *node { 
+	if (h.right == nil) {  
+		if (h.left != nil) {
+            h.left.color = BLACK
+			return h.left
+		}		
+	}
+
+	if (isRed(h.left)) {
+		h = leanRight(h)
+	}
+	
+	if (!isRed(h.right) && !isRed(h.right.left)) {
+		h = moveRedRight(h)
+	}
+
+	h.right = deleteMax(h.right)
+
+	if (isRed(h.right)) {
+		h = leanLeft(h)
+	}
+
+	return h
+}
+
+func (rb *RedBlackBST) Delete(key α) {
+	if rb.N == 0 {
+		log.Panic("Tried to delete an element from an empty αβRedBlackBST")
+	}
+
+	rb.root = delete(rb.root, key)
+	rb.root.color = BLACK
+	rb.N--
+}
+
+func delete(h *node, key α) *node { 
+	if (less(key, h.key)) {
+		if (!isRed(h.left) && !isRed(h.left.left)) {
+            h = moveRedLeft(h)
+			h.left =  delete(h.left, key)
+		}
+	} else {
+		if (isRed(h.left)) {
+			h = leanRight(h)
+		}
+		if (eq(key, h.key) && (h.right == nil)) {
+			return nil
+		}
+		if (!isRed(h.right) && !isRed(h.right.left)) {
+			h = moveRedRight(h)
+		}
+		if eq(key, h.key) {
+			// 
+			v, ok := get(h.right, min(h.right))
+			if ok {
+				h.value = v
+			} else {
+				h.value = Newβ()
+			}
+			// end
+            h.key = min(h.right)
+			h.right = deleteMin(h.right)
+		} else {
+			h.right = delete(h.right, key)
+		}
+	}
+	
+	if (isRed(h.right)) {
+		h = leanLeft(h)
+	} 
+	return h
+}
+
+// Helper methods
+func less(a, b α) bool { 
+	return a.compareTo(b) <  0; 
+}  
+
+func eq  (a, b α) bool { 
+	return a.compareTo(b) == 0; 
+} 
+
+func isRed(x *node) bool {
+	if (x == nil) {
+		return false
+	}
+	return (x.color == RED)
+}
+
+func rotR(h *node) *node {  // Rotate right.
 	x := h.left
 	h.left = x.right
 	x.right = h
-	x.color = h.color
-	h.color = RED
-	x.N = h.N
-	h.N = 1 + size(h.left) + 1 + size(h.right)	
 	return x
 }
 
-func flipColors(h *_node) {
-	h.color = RED;
-	h.left.color = BLACK
-	h.right.color = BLACK
+func rotL(h *node) *node {  // Rotate left.
+	x := h.right
+	h.right = x.left
+	x.left = h
+	return x
 }
 
-type rbtree struct {
-	root *_node
-}
-
-func NewRBTree() rbtree {
-	return rbtree{}
-}
-
-func (t rbtree) Show() string {
-	return show(t.root, 0)
-}
-
-
-func (t *rbtree) put(key 𝞃) {
-	t.root = t.put2(t.root, key)
-	t.root.color = BLACK
-}
-
-func (t *rbtree) put2(h *_node, key 𝞃) *_node {
-	if h == nil {
-		return new_node(key, 1, RED)
-	}
-
-	cmp := key.CompareTo(h.key)
-	switch {
-	case cmp <= 0:
-		h.left = t.put2(h.left, key)
-	case cmp > 0:
-		h.right = t.put2(h.right, key)
-	default:
-		//h.val = val
-	}
-	
-	if isRed(h.right) && !isRed(h.left) {
-		h = rotateLeft(h)
-	}
-	if isRed(h.left) && isRed(h.left.left) {
-		h = rotateRight(h)
-	}
-	if isRed(h.left) && isRed(h.right) {
-		flipColors(h)
-	}
-	
-	h.N = size(h.left) + size(h.right) + 1
+func splitFourNode(h *node)  *node {  // Rotate right, then flip colors.
+	h = rotR(h)
+	//      h.color       = RED
+	h.left.color  = BLACK
 	return h
 }
 
-func show(h *_node, depth int) string {
-	padding := ""
-
-	for i:=0; i<depth*4; i++ {
-		padding += " "
-	}
-
-	if h == nil {
-		return padding + "nil"
-	}
-	
-	left := show(h.left, depth + 1) + "\n"
-	right := show(h.right, depth + 1) + "\n"
-	return fmt.Sprintf("%s%d\n", padding, h.key) + left + right
-}
-
-func colorFlip(h *_node) *_node { 
-	h.color = !h.color;	
-	h.left.color = !h.left.color;
-	h.right.color = !h.right.color;	
-	return h;
-}
-
-
-func moveRedLeft(h *_node) *_node { 
-	colorFlip(h)
-	
-	if isRed(h.right.left) {
-		h.right = rotateRight(h.right)
-		h = rotateLeft(h)
-		colorFlip(h)
-	}
+func leanLeft(h *node)  *node {  // Make a right-leaning 3-node lean to the left.
+	h = rotL(h)
+	h.color      = h.left.color;                   
+	h.left.color = RED;                     
 	return h
 }
 
-// Assuming that h is red and both h.right and h.right.left
-// are black, make h.right or one of its children red.
-func moveRedRight(h *_node) *_node { 
-	h.color = BLACK
-	h.right.color = RED
-	if !isRed(h.left.left) {
-		h.left.color = RED
+func leanRight(h *node)  *node {  // Make a left-leaning 3-node lean to the right.
+	h = rotR(h)
+	h.color       = h.right.color;                   
+	h.right.color = RED;                     
+	return h
+}
+
+func moveRedLeft(h *node)  *node {  // Assuming that h is red and both h.left and h.left.left
+	// are black, make h.left or one of its children red.
+	h.color      = BLACK
+	h.left.color = RED;  
+
+	if (!isRed(h.right.left))  {
+		h.right.color = RED; 
 	} else { 
-		h = rotateRight(h)
+		h.right = rotR(h.right)
+		h = rotL(h)
+	}
+	return h
+}
+
+func moveRedRight(h *node)  *node {  // Assuming that h is red and both h.right and h.right.left
+	// are black, make h.right or one of its children red.
+	h.color      = BLACK
+	h.right.color = RED;  
+	if (!isRed(h.left.left)) {
+		h.left.color = RED; 
+	} else { 
+		h = rotR(h)
 		h.color = RED
 		h.left.color = BLACK
 	}
 	return h
 }
 
-// Make a left-leaning 3-node lean to the right.
-func leanRight(h *_node) *_node {  
-	h = rotateRight(h);
-	h.color = h.right.color;                   
-	h.right.color = RED;                     
-	return h
-}
+// Utility functions
 
-func (h *_node) min() 𝞃 {
-	if h.left == nil {
-		return h.key
-	} 
-	return h.min()
-}
+// return number of key-value pairs in symbol table
+func (rb *RedBlackBST) size() int { 
+	return rb.N
+}  
 
-func (h *_node) isLeaf() bool {
-	return h.left == nil && h.right == nil
-}
+// height of tree (empty tree height = 0)
+func (rb *RedBlackBST) height() int { 
+	return height(rb.root) 
+}  
 
-func (h *_node) deleteMin() {
-	// case of initial empty tree.
-	if h.left == nil {
-		return 
+func MaxInt(a, b int) int {
+	if a > b {
+		return a 
 	}
-	if h.left.isLeaf() {
-		h.left = nil
-	}
+	return b
 }
 
-func (h *_node) delete(key 𝞃) *_node {
-	cmp := key.CompareTo(h.key)
+func height(x *node) int {  
+	if (x == nil) {
+		return 0
+	}
+	return 1 + MaxInt(height(x.left), height(x.right))
+}
 
-	if cmp < 0 {
-		if !isRed(h.left) && !isRed(h.left.left) {			
-			h = moveRedLeft(h);			
-			h.left.delete(key);			
+// return the smallest key
+func (rb *RedBlackBST) min() α {
+	return min(rb.root)
+}
+
+func min(x *node) α {
+	var key α
+	for ; x != nil; x = x.left {
+		key = x.key
+	}
+	return key
+}
+
+// return the largest key
+func (rb *RedBlackBST) max() α {
+	var key α
+	for x := rb.root; x != nil; x = x.right {
+		key = x.key
+	}
+	return key
+}
+
+
+
+// Integrity checks
+
+func (rb *RedBlackBST) check()   bool {  // Is this tree a red-black tree?
+	return rb.isBST() && rb.is234() && rb.isBalanced()
+}
+
+func (rb *RedBlackBST) isBST() bool {  // Is this tree a BST?
+	return isBST(rb.root, rb.min(), rb.max())
+}
+
+// Are all the values in the BST rb.rooted at x between min and max,
+// and does the same property hold for both subtrees?
+func isBST(x *node, min, max α) bool {  
+	if (x == nil) {
+		return true
+	}
+	if less(x.key, min) || less(max, x.key) {
+		return false
+	}
+	return isBST(x.left, min, x.key) && isBST(x.right, x.key, max)
+} 
+
+func (rb *RedBlackBST) is234() bool { 
+	return is234(rb.root); 
+}  
+
+// Does the tree have no red right links, and at most two (left)
+// red links in a row on any path?
+func is234(x *node)  bool { 
+	if (x == nil) {
+		return true
+	}
+	if (isRed(x.right)) {
+		return false
+	}
+	if (isRed(x)) {
+		if (isRed(x.left)) {
+			if (isRed(x.left.left)) {
+				return false
+			}
 		}
-	} else {		
-		if isRed(h.left) {
-			h = leanRight(h);
-		}
-
-		if (cmp == 0 && (h.right == nil)) {
-			return nil;
-		}
-		
-		if !isRed(h.right) && !isRed(h.right.left) {
-			h = moveRedRight(h)
-		}
-		
-		if (cmp == 0) {			
-			h.key = h.right.min()			
-			h.right.deleteMin()
-		} else {
-			h.right.delete(key)
-		}
 	}
-	return fixUp(h);
+	return is234(x.left) && is234(x.right)
+} 
+
+// Do all paths from rb.root to leaf have same number of black edges?
+// number of black links on path from rb.root to min
+func (rb *RedBlackBST) isBalanced()  bool { 
+	black := 0
+	x := rb.root
+	for x != nil {
+		if !isRed(x) {
+			black++
+		}
+		x = x.left
+	}
+	return isBalanced(rb.root, black)
 }
 
+// Does every path from the rb.root to a leaf have the given number 
+func isBalanced(x *node, black int) bool { 
+	// of black links?
+	if x == nil && black == 0 {
+		return true
+	} else if (x == nil && black != 0) {
+		return false
+	}
+	if (!isRed(x)) {
+		black--
+	}
+	return isBalanced(x.left, black) && isBalanced(x.right, black)
+} 
 
-func fixUp(h *_node) *_node {
-	if isRed(h.right) {
-		h = rotateLeft(h);
-	}
-	if (isRed(h.left) && isRed(h.left.left)) {
-		h = rotateRight(h);
-	}
-	if (isRed(h.left) && isRed(h.right)) {		
-		colorFlip(h);
-	}
-	return h;	
-}
