@@ -11,6 +11,7 @@ install:
 
 test:
 	go test ./stack
+	go test ./rbtree
 
 clean: 	
 	rm -f *~	

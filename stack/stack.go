@@ -74,7 +74,6 @@ func (s *Stack𝞃) PanicPop() 𝞃 {
 	return el
 }
 
-
 // Half the stack capacity if cur index is quarter the length
 func (s *Stack𝞃) maybeShrink() {	
 	if s.cur <= len(s.arr) / 4 {
