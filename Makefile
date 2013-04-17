@@ -10,8 +10,8 @@ install:
 	go install
 
 test:
-	go test ./stack
-	go test ./rbtree
+	@go test ./stack
+	@go test ./rbtree
 
 clean: 	
 	rm -f *~	

@@ -108,7 +108,7 @@ func GetTemplate(s string) (string, error) {
 
 func Generify(template string) string {
 	// TODO: build multi parameter generics when that's needed
-	return strings.Replace(template, `𝞃`, *typeName, -1)
+	return strings.Replace(template, `α`, *typeName, -1)
 }
 
 func ReplacePackageName(template string) (string, error) {

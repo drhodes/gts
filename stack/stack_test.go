@@ -5,28 +5,27 @@ import (
 	"log"
 )
 
-
 func TestPop(t *testing.T) {
-	s := NewStack𝞃()
+	s := NewStackα()
 	
-	s.Push(𝞃(1))
+	s.Push(α(1))
 	v, err := s.Pop()
 	if err != nil {
 		log.Println(err, "Pop Fails")
 		t.Fail()
 	}
 	
-	if v != 𝞃(1) {
+	if v != α(1) {
 		log.Println("Pop didn't match", v)
 		t.Fail()
 	}
 }
 
 func TestPointerPop(t *testing.T) {
-	s := NewStack𝞃()
+	s := NewStackα()
 
 	for i:=0; i<=1000; i++ {
-		s.Push(𝞃(i))
+		s.Push(α(i))
 	}
 
 	for i:=1000; i>=0; i-- {
@@ -35,7 +34,7 @@ func TestPointerPop(t *testing.T) {
 			log.Println("Popped empty stack")
 			t.Fail()
 		}
-		if *vp != 𝞃(i) {
+		if *vp != α(i) {
 			log.Println("Pop didn't match", *vp, i)
 			t.Fail()
 		}
@@ -50,7 +49,7 @@ func TestPointerPop(t *testing.T) {
 
 
 func TestMany(t *testing.T) {
-	s := NewStack𝞃()
+	s := NewStackα()
 
 	// should be empty
 	if !s.Empty() {
@@ -59,7 +58,7 @@ func TestMany(t *testing.T) {
 	}
 
 	for i:=0; i<=1000; i++ {
-		s.Push(𝞃(i))
+		s.Push(α(i))
 	}
 
 	for i:=1000; i>=0; i-- {
@@ -69,7 +68,7 @@ func TestMany(t *testing.T) {
 			t.Fail()
 		}
 
-		if v != 𝞃(i) {
+		if v != α(i) {
 			log.Println("Pop didn't match", v, i)
 			t.Fail()
 		}
