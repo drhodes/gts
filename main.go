@@ -12,20 +12,6 @@ import (
 	"strings"
 )
 
-var (
-	pkgNameMsg = "The package name used for the generated code."
-	pkgName    = flag.String("pkg", "", pkgNameMsg)
-
-	typeNameMsg = "The name the type to be inserted"
-	typeName    = flag.String("type", "", typeNameMsg)
-
-	genericNameMsg = "The name of the generic template container type"
-	genericName    = flag.String("gen", "", genericNameMsg)
-
-	// listContainersMsg = "List the available container types"
-	// listContainers = flag.String("list", "", listContainersMsg)
-)
-
 func ParseFlags() {
 	flag.Parse()
 

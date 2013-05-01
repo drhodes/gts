@@ -1,5 +1,5 @@
 
-all:
+build:
 	go build
 	go build ./stack
 
@@ -18,6 +18,8 @@ clean:
 	go clean
 	rm -f ./stack/*~
 	go clean ./stack		
+	rm -f ./rbtree/*~
+	go clean ./rbtree
 
 commit: clean
 	git add .
