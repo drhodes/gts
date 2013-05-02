@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+	"os"
 	"flag"
 	"errors"
 )
@@ -62,6 +64,7 @@ func initFlags() {
 	flag.BoolVar(&list, "list", false, listUsage)
 }
 
+
 func verifyFlags() error {
 	// if --list is given, list the packages and quit.	
 	bs := 0
@@ -81,3 +84,23 @@ func verifyFlags() error {
 	// a host of other possible issues should be handled here.
 	return nil
 }
+
+func ParseFlags() {
+	flag.Parse()
+
+	if *pkgName == "" {
+		log.Println("You must supply a package name")
+		os.Exit(1)
+	}
+
+	if *typeName == "" {
+		log.Println("You must supply a type name")
+		os.Exit(1)
+	}
+
+	if *genericName == "" {
+		log.Println("You must supply " + genericNameMsg)
+		os.Exit(1)
+	}
+}
+

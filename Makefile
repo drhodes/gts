@@ -2,6 +2,7 @@
 build:
 	go build
 	go build ./stack
+	go build ./rbtree
 
 run: all
 	./gts -pkg main -type Point -gen stack

@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"errors"
-	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -12,26 +11,7 @@ import (
 	"strings"
 )
 
-func ParseFlags() {
-	flag.Parse()
-
-	if *pkgName == "" {
-		log.Println("You must supply a package name")
-		os.Exit(1)
-	}
-
-	if *typeName == "" {
-		log.Println("You must supply a type name")
-		os.Exit(1)
-	}
-
-	if *genericName == "" {
-		log.Println("You must supply " + genericNameMsg)
-		os.Exit(1)
-	}
-}
-
-const URL = "https://raw.github.com/drhodes/gts/master/%s/%s.go"
+const URL = "https://raw.github.com:443/drhodes/gts/master/%s/%s.go"
 
 func BuildUrl(s string) string {
 	url := fmt.Sprintf(URL, s, s)
@@ -93,11 +73,12 @@ func GetTemplate(s string) (string, error) {
 }
 
 func Generify(template string) string {
-	// TODO: build multi parameter generics when that's needed
+	// TODO: build multi parameter generics when that's needed	
 	return strings.Replace(template, `α`, *typeName, -1)
 }
 
 func ReplacePackageName(template string) (string, error) {
+	// golang regex tool
 	// http://regoio.herokuapp.com/ <- highly recommended :)
 	pattern := `package ([\pL_])+([\pL\pN_])*`
 	re := regexp.MustCompile(pattern)
