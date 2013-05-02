@@ -1,3 +1,5 @@
+NOT READY FOR USE
+
 An experiment in providing generic data structures 
 through a simple template scheme.
 
