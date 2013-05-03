@@ -1,8 +1,14 @@
 
-build:
+
+
+mangle:
+	./gts -mangle ./rbtree
+
+build: 
 	go build
 	go build ./stack
 	go build ./rbtree
+	$(MAKE) mangle
 
 run: all
 	./gts -pkg main -type Point -gen stack

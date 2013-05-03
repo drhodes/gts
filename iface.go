@@ -1,8 +1,8 @@
 package main
 
 import (
-	"log"
-	"os"
+	// "log"
+	// "os"
 	"flag"
 	"errors"
 )
@@ -27,12 +27,15 @@ var (
 	// to ensure that the correct number of type parameters were
 	// provided.  If not, gts emits an error message and exits
 	// with failure code
-	// --type-params = Type1 Type2 ... TypeN
+	// -type-params = Type1 Type2 ... TypeN
 	typeParams string
 
 	// -list
 	// list the available containers
-	list bool
+	// list bool
+
+	// -mangle=pkgpath	
+	manglePath string
 
 
 	pkgNameMsg = "The package name used for the generated code."
@@ -46,27 +49,31 @@ var (
 )
 
 func initFlags() {
-	const customUrlUsage = "custom url use a custom url pointing to the path of a template"
+	const customUrlUsage = 
+		"Use a custom url to specify the path of a template package"
 	flag.StringVar(&customUrl, "custom-url", "", customUrlUsage)
 	flag.StringVar(&customUrl, "cu", "", customUrlUsage+" (shorthand)")
 
-	const customFileUsage = "custom file use a custom file pointing to the path of a template"
+	const customFileUsage = 
+		"custom file use a custom file pointing to the path of a template"
 	flag.StringVar(&customFile, "custom-file", "", customFileUsage)
-	flag.StringVar(&customFile, "cu", "", customFileUsage+" (shorthand)")
+	flag.StringVar(&customFile, "cf", "", customFileUsage+" (shorthand)")
 
-	const stdinUsage = "custom file use a custom file pointing to the path of a template"
+	const stdinUsage = 
+		"custom file use a custom file pointing to the path of a template"
 	flag.BoolVar(&stdin, "stdin", false, stdinUsage)
 
-	const typeParamsUsage = "specify the types, seperated by spaces to insert in the template"
+	const typeParamsUsage = 
+		"specify the types, seperated by spaces to insert in the template"
 	flag.StringVar(&typeParams, "type-params", "", typeParamsUsage)
 
-	const listUsage = "list the available containers and their type vars"
-	flag.BoolVar(&list, "list", false, listUsage)
+	const manglePathUsage =
+		"specify the path of a package to mangle, this operation is non destructive"
+
+	flag.StringVar(&manglePath, "mangle", "", manglePathUsage)
 }
 
-
 func verifyFlags() error {
-	// if --list is given, list the packages and quit.	
 	bs := 0
 	
 	if customUrl != "" { bs++ }
@@ -86,21 +93,24 @@ func verifyFlags() error {
 }
 
 func ParseFlags() {
+	initFlags()
 	flag.Parse()
+	
+	
 
-	if *pkgName == "" {
-		log.Println("You must supply a package name")
-		os.Exit(1)
-	}
+	// if *pkgName == "" {
+	// 	log.Println("You must supply a package name")
+	// 	os.Exit(1)
+	// }
 
-	if *typeName == "" {
-		log.Println("You must supply a type name")
-		os.Exit(1)
-	}
+	// if *typeName == "" {
+	// 	log.Println("You must supply a type name")
+	// 	os.Exit(1)
+	// }
 
-	if *genericName == "" {
-		log.Println("You must supply " + genericNameMsg)
-		os.Exit(1)
-	}
+	// if *genericName == "" {
+	// 	log.Println("You must supply " + genericNameMsg)
+	// 	os.Exit(1)
+	// }	
 }
 

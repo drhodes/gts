@@ -124,18 +124,43 @@ func RemoveDummySection(template string) string {
 func main() {
 	ParseFlags()
 
-	template, err := GetTemplate(*genericName)
+	// template, err := GetTemplate(*genericName)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// template = Generify(template)
+
+	// template, err = ReplacePackageName(template)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// template = RemoveDummySection(template)
+	// fmt.Println(template)
+
+	err := ManglePackage(manglePath)
+	log.Println(manglePath)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	template = Generify(template)
-
-	template, err = ReplacePackageName(template)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	template = RemoveDummySection(template)
-	fmt.Println(template)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

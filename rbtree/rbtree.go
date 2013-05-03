@@ -26,8 +26,8 @@ func (k α) compareTo(other α) int {
 }
 
 const (
-	RED = true
-	BLACK = false
+	red = true
+	black = false
 )
 
 type node struct {
@@ -81,12 +81,12 @@ func (rb *RedBlackBST) put(key α, value β) {
 		rb.N++
 	}
 	rb.root = insert(rb.root, key, value)
-	rb.root.color = BLACK
+	rb.root.color = black
 }
 
 func insert(h *node, key α, value β) *node {
 	if (h == nil) {
-		return newNode(key, value, RED)
+		return newNode(key, value, red)
 	}
 	if (isRed(h.left)) {
 		if (isRed(h.left.left)) {
@@ -110,7 +110,7 @@ func insert(h *node, key α, value β) *node {
 
 func (rb *RedBlackBST) deleteMin() {	
 	rb.root = deleteMin(rb.root)
-	rb.root.color = BLACK
+	rb.root.color = black
 	rb.N--
 }
 
@@ -133,14 +133,14 @@ func deleteMin(h *node) *node {
 
 func (rb *RedBlackBST) deleteMax() { 
 	rb.root = deleteMax(rb.root)
-	rb.root.color = BLACK
+	rb.root.color = black
 	rb.N--
 }
 
 func deleteMax(h *node) *node { 
 	if (h.right == nil) {  
 		if (h.left != nil) {
-            h.left.color = BLACK
+            h.left.color = black
 			return h.left
 		}		
 	}
@@ -168,7 +168,7 @@ func (rb *RedBlackBST) Delete(key α) {
 	}
 
 	rb.root = delete(rb.root, key)
-	rb.root.color = BLACK
+	rb.root.color = black
 	rb.N--
 }
 
@@ -223,7 +223,7 @@ func isRed(x *node) bool {
 	if (x == nil) {
 		return false
 	}
-	return (x.color == RED)
+	return (x.color == red)
 }
 
 func rotR(h *node) *node {  // Rotate right.
@@ -242,32 +242,32 @@ func rotL(h *node) *node {  // Rotate left.
 
 func splitFourNode(h *node)  *node {  // Rotate right, then flip colors.
 	h = rotR(h)
-	//      h.color       = RED
-	h.left.color  = BLACK
+	//      h.color       = red
+	h.left.color  = black
 	return h
 }
 
 func leanLeft(h *node)  *node {  // Make a right-leaning 3-node lean to the left.
 	h = rotL(h)
 	h.color      = h.left.color;                   
-	h.left.color = RED;                     
+	h.left.color = red;                     
 	return h
 }
 
 func leanRight(h *node)  *node {  // Make a left-leaning 3-node lean to the right.
 	h = rotR(h)
 	h.color       = h.right.color;                   
-	h.right.color = RED;                     
+	h.right.color = red;                     
 	return h
 }
 
 func moveRedLeft(h *node)  *node {  // Assuming that h is red and both h.left and h.left.left
 	// are black, make h.left or one of its children red.
-	h.color      = BLACK
-	h.left.color = RED;  
+	h.color      = black
+	h.left.color = red;  
 
 	if (!isRed(h.right.left))  {
-		h.right.color = RED; 
+		h.right.color = red; 
 	} else { 
 		h.right = rotR(h.right)
 		h = rotL(h)
@@ -277,14 +277,14 @@ func moveRedLeft(h *node)  *node {  // Assuming that h is red and both h.left an
 
 func moveRedRight(h *node)  *node {  // Assuming that h is red and both h.right and h.right.left
 	// are black, make h.right or one of its children red.
-	h.color      = BLACK
-	h.right.color = RED;  
+	h.color      = black
+	h.right.color = red;  
 	if (!isRed(h.left.left)) {
-		h.left.color = RED; 
+		h.left.color = red; 
 	} else { 
 		h = rotR(h)
-		h.color = RED
-		h.left.color = BLACK
+		h.color = red
+		h.left.color = black
 	}
 	return h
 }
